@@ -1,20 +1,22 @@
-FSceneManager
+FSceneManager v2.0
 =============
 
 SceneManager for Futile, a Unity framework.
 
-todo
+updates
 -------------
 
-- [ ] Transitions have been added. Could always make more!
-- [ ] Tilemap stuff removed. May return as its own lib.
+- Transitions have been added. Could always make more!
+- Tilemap stuff removed. May return as its own lib.
+- Updated how the HandleEnter, HandleExit, and HandleUpdate methods are called.
+- Scene have states now. TransitionOn, TransitionOff, Active, and Paused.
 
 
 methods
 -------------
-FSceneManager.Instance.SetScene(); Sets the new scene passed as the only scene in the stack.
+FSceneManager.Instance.SetScene(); Sets the new scene passed as the only scene in the stack. (calls PopScene until empty first)
 FSceneManager.Instance.PushScene(); Pushes a new scene onto the stack.
-FSceneManager.Instance.PopScene(); Removes the last scene added from the stack.
+FSceneManager.Instance.PopScene(); Removes the last scene added to the stack.
 FSceneManager.Instance.RemoveScene(); Removes a specific scene from the stack.
 
 
@@ -46,7 +48,12 @@ public class SceneGame : FScene
 
 	public override void HandleEnter()
 	{
+		// Called when the Scene is added to the SceneManager
+	}
 
+	public override void HandleExit()
+	{
+		// Called when the Scene is removed from the SceneManager
 	}
 
 	public override void HandleUpdate()
