@@ -13,60 +13,88 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class FScene : FContainer
+public class FScene : FContainer, FMultiTouchableInterface
 {
+	protected FSceneManager mSceneManager = null;
+	public FSceneManager SceneManager
+	{
+		get { return mSceneManager; }
+		set { mSceneManager = value; }
+	}
+
 	protected string mName;
 	public string Name
 	{
 		get { return mName; }
 		set { mName = value; }
 	}
-	
-	protected bool mPaused;
-	public bool Paused
+
+	protected bool mIsExiting = false;
+	public bool IsExiting
 	{
-		get { return mPaused; }
-		set { mPaused = value; }
+		get { return mIsExiting; }
+		set { mIsExiting = value; }
 	}
 
-	public FScene (string _name = "Default") : base()
+	protected FSceneState mState = FSceneState.Active;
+	public FSceneState State
+	{
+		get { return mState; }
+		set { mState = value; }
+	}
+
+	protected FTransition mTransitionOn = null;
+	public FTransition TransitionOn
+	{
+		get { return mTransitionOn; }
+		set { mTransitionOn = value; }
+	}
+
+	protected FTransition mTransitionOff = null;
+	public FTransition TransitionOff
+	{
+		get { return mTransitionOff; }
+		set { mTransitionOff = value; }
+	}
+
+	public FScene( string _name = "Default" ) : base()
 	{
 		mName = _name;
-	}
-	
-	override public void HandleAddedToStage()
-	{
-		base.HandleAddedToStage();
-		Futile.instance.SignalUpdate += OnUpdate;
-		
-		this.OnEnter();
-	}
 
-	override public void HandleRemovedFromStage()
-	{
-		this.OnExit();
-		
-		Futile.instance.SignalUpdate -= OnUpdate;
-		base.HandleRemovedFromStage();
+		ListenForUpdate( HandleUpdate );
+
+		ListenForResize( HandleResize );
+
+		EnableMultiTouch();
 	}
 	
-	virtual public void OnUpdate ()
+	virtual public void HandleUpdate ()
 	{
 		
 	}
-	
-	virtual public void OnEnter()
+
+	virtual public void HandleEnter()
 	{
 
 	}
 
-	virtual public void OnExit()
+	virtual public void HandleExit()
 	{
 
 	}
-	
+
+	virtual public void HandleResize( bool _change )
+	{
+		
+	}
+
+	virtual public void HandleMultiTouch( FTouch[] touches )
+	{
+
+	}
+
 	public override string ToString()
 	{
-		return "Name: " + mName + " - Paused: " + mPaused;
+		return "Name: " + mName + " - State: " + mState.ToString();
 	}
 }

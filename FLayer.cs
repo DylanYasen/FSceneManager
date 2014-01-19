@@ -13,54 +13,29 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class FLayer : FContainer, FMultiTouchableInterface
+public class FLayer : FContainer
 {
-	protected FScene mParent;
-	public FScene Parent
+	protected FScene mScene;
+	public FScene Scene
 	{
-		get { return mParent; }
-		set { mParent = value; }
+		get { return mScene; }
+		set { mScene = value; }
 	}
 
-	public FLayer (FScene _parent)
+	public FLayer ( FScene _scene )
 	{
-		mParent = _parent;
+		mScene = _scene;
+
+		ListenForUpdate( HandleUpdate );
+		ListenForResize( HandleResize );
 	}
 
-	override public void HandleAddedToStage()
-	{
-		base.HandleAddedToStage();
-		Futile.touchManager.AddMultiTouchTarget(this);
-		Futile.instance.SignalUpdate += OnUpdate;
-		
-		this.OnEnter();
-	}
-
-	override public void HandleRemovedFromStage()
-	{
-		this.OnExit();
-		
-		Futile.touchManager.RemoveMultiTouchTarget(this);
-		Futile.instance.SignalUpdate -= OnUpdate;
-		base.HandleRemovedFromStage();
-	}
-	
-	virtual public void HandleMultiTouch(FTouch[] touches)
-	{
-
-	}
-
-	virtual public void OnUpdate ()
+	virtual public void HandleUpdate ()
 	{
 		
 	}
 	
-	virtual public void OnEnter()
-	{
-		
-	}
-	
-	virtual public void OnExit()
+	virtual public void HandleResize( bool _change )
 	{
 		
 	}

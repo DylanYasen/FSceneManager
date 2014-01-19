@@ -13,6 +13,15 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+public enum FSceneState
+{
+	None,
+	TransitionOn,
+	TransitionOff,
+	Active,
+	Paused
+}
+
 public sealed class FSceneManager : FContainer
 {
 	private static readonly FSceneManager mInstance = new FSceneManager();
@@ -25,59 +34,112 @@ public sealed class FSceneManager : FContainer
 	}
 	
 	private List<FScene> mScenes;
+	private List<FScene> mRemoveScenes;
+
 	public static FStage mStage;
-	
-	private FTransition mTransition;
 
 	private FSceneManager() : base()
 	{
 		mScenes = new List<FScene>();
+		mRemoveScenes = new List<FScene>();
+
 		mStage = Futile.stage;
 
-		mStage.AddChild(this);
+		mStage.AddChild( this );
+
+		ListenForUpdate( HandleUpdate );
+	}
+
+	public void SetScene( FScene _scene )
+	{
+		while( mScenes.Count > 0 )
+			PopScene();
 		
-		mTransition = null;
+		PushScene( _scene );
 	}
 	
-	public void PushScene(FScene _scene, bool _pause = false)
+	public void PushScene( FScene _scene, bool _pause = true )
 	{
-		if(_pause)
-		foreach(FScene scene in mScenes)
-			scene.Paused = true;
-		
-		mScenes.Add(_scene);
-		this.AddChild(_scene);
+		if( _pause )
+		foreach( FScene scene in mScenes )
+			scene.State = FSceneState.Paused;
+
+		// Add to Scene list
+		mScenes.Add( _scene );
+		// Add to display
+		AddChild( _scene );
+
+		// Scene is starting
+		_scene.HandleEnter();
+
+		// If Scene has a transition, run it
+		if( _scene.TransitionOn != null )
+		{
+			_scene.State = FSceneState.TransitionOn;
+			_scene.TransitionOn.Start();
+			_scene.TransitionOn.NewState = FSceneState.Active;
+		}
 	}
 
 	public void PopScene()
 	{
-		if(mScenes.Count > 0)
+		if( mScenes.Count > 0 )
 		{
-			FScene scene = mScenes[mScenes.Count - 1];
-			scene.RemoveFromContainer();
+			FScene scene = mScenes[ mScenes.Count - 1 ];
 
-			mScenes.Remove(scene);
+			if( scene.TransitionOff != null )
+			{
+				scene.TransitionOff.Start();
+				scene.State = FSceneState.TransitionOff;
+
+				mScenes.Remove( scene );
+				mRemoveScenes.Add( scene );
+			}
+			else
+				RemoveScene( scene );
+				
 		}
-		
+	}
+
+	private void RemoveScene( FScene _scene )
+	{
+		if( mScenes.Contains( _scene ) )
+		{
+			_scene.RemoveFromContainer();
+			_scene.HandleExit();
+
+			mScenes.Remove( _scene );
+		}
+
 		// Unpause scene
-		if(mScenes.Count > 0)
+		if( mScenes.Count > 0 )
 		{
-			FScene scene = mScenes[mScenes.Count - 1];
-			scene.Paused = false;
+			FScene scene = mScenes[ mScenes.Count - 1 ];
+			scene.State = FSceneState.Active;
 		}
 	}
 
-	public void SetScene(FScene _scene)
+	private void HandleUpdate()
 	{
-		while(mScenes.Count > 0)
-			PopScene();
+		for( int i = mRemoveScenes.Count - 1; i >= 0; i-- )
+		{
+			if( mRemoveScenes[ i ].TransitionOff.IsComplete == true )
+			{
+				FScene scene = mRemoveScenes[ i ];
 
-		PushScene(_scene);
-	}
-	
-	public void SetSceneWithTransition(FScene _scene, FTransition _transition)
-	{
-		
+				scene.RemoveFromContainer();
+				scene.HandleExit();
+
+				mRemoveScenes.RemoveAt( i );
+
+				// Unpause scene
+				if( mScenes.Count > 0 )
+				{
+					FScene bottomscene = mScenes[ mScenes.Count - 1 ];
+					bottomscene.State = FSceneState.Active;
+				}
+			}
+		}
 	}
 	
 	// Added after looking at Iron Pencil's implementation. Thanks!
@@ -87,7 +149,7 @@ public sealed class FSceneManager : FContainer
 		
 		int i = 1;
 		
-		foreach(FScene scene in mScenes)
+		foreach( FScene scene in mScenes )
 		{
 			sceneList += "[" + i + "] - " + scene.ToString() + "\r\n";
 			i++;
