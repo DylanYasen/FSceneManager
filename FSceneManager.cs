@@ -25,11 +25,14 @@ public enum FSceneState
 
 public sealed class FSceneManager : FContainer
 {
-	private static readonly FSceneManager mInstance = new FSceneManager();
+	private static FSceneManager mInstance;
 	public static FSceneManager Instance
 	{
 		get
 		{
+			if( mInstance == null )
+				mInstance = new FSceneManager();
+
 			return mInstance;
 		}
 	}
@@ -51,6 +54,10 @@ public sealed class FSceneManager : FContainer
 		ListenForUpdate( HandleUpdate );
 	}
 
+	/// <summary>
+	/// Removes all other SCENENS and adds _SCENE.
+	/// </summary>
+	/// <param name="_scene">_scene.</param>
 	public void SetScene( FScene _scene )
 	{
 		while( mScenes.Count > 0 )
@@ -58,7 +65,12 @@ public sealed class FSceneManager : FContainer
 		
 		PushScene( _scene );
 	}
-	
+
+	/// <summary>
+	/// Pushes a SCENE onto the stack. Pauses all other SCENES underneath. (unless specified not to)
+	/// </summary>
+	/// <param name="_scene">_scene.</param>
+	/// <param name="_pause">If set to <c>true</c> _pause.</param>
 	public void PushScene( FScene _scene, bool _pause = true )
 	{
 		if( _pause )
@@ -82,6 +94,10 @@ public sealed class FSceneManager : FContainer
 		}
 	}
 
+	/// <summary>
+	/// Pops a SCENE from the top of the stack. Unpauses the SCENE underneath.
+	/// Starts the TRANSITION of a popped SCENE.
+	/// </summary>
 	public void PopScene()
 	{
 		if( mScenes.Count > 0 )
@@ -102,7 +118,11 @@ public sealed class FSceneManager : FContainer
 		}
 	}
 
-	private void RemoveScene( FScene _scene )
+	/// <summary>
+	/// Removes a SCENE without waiting for a TRANSITION.
+	/// </summary>
+	/// <param name="_scene">_scene.</param>
+	public void RemoveScene( FScene _scene )
 	{
 		if( mScenes.Contains( _scene ) )
 		{
@@ -110,13 +130,13 @@ public sealed class FSceneManager : FContainer
 			_scene.HandleExit();
 
 			mScenes.Remove( _scene );
-		}
 
-		// Unpause scene
-		if( mScenes.Count > 0 )
-		{
-			FScene scene = mScenes[ mScenes.Count - 1 ];
-			scene.State = FSceneState.Active;
+			// Unpause scene
+			if( mScenes.Count > 0 )
+			{
+				FScene scene = mScenes[ mScenes.Count - 1 ];
+				scene.State = FSceneState.Active;
+			}
 		}
 	}
 
@@ -143,8 +163,11 @@ public sealed class FSceneManager : FContainer
 		}
 	}
 	
-	// Added after looking at Iron Pencil's implementation. Thanks!
-	private string GetSceneList()
+	/// <summary>
+	/// Gets a string list of all SCENES on the stack.
+	/// </summary>
+	/// <returns>The scene list.</returns>
+	public string GetSceneList()
     {
         string sceneList = "";
 		
