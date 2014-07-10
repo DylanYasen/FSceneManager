@@ -66,6 +66,44 @@ public class FTransition
 	}
 }
 
+public class FTransitionZoomInFront : FTransition
+{
+	public FTransitionZoomInFront( FScene _scene, float _time )
+	{
+		mScene = _scene;
+		mTime = _time;
+	}
+	
+	public override void Start()
+	{
+		mScene.scale = 10.0f;
+		
+		Go.to( mScene, mTime, new TweenConfig()
+		      .setDelay( 0.0f )
+		      .floatProp( "scale", 1.0f )
+		      .onComplete( HandleComplete ) );
+	}
+}
+
+public class FTransitionZoomOutFront : FTransition
+{
+	public FTransitionZoomOutFront( FScene _scene, float _time )
+	{
+		mScene = _scene;
+		mTime = _time;
+	}
+	
+	public override void Start()
+	{
+		mScene.scale = 1.0f;
+		
+		Go.to( mScene, mTime, new TweenConfig()
+		      .setDelay(0.0f)
+		      .floatProp( "scale", 10.0f )
+		      .onComplete( HandleComplete ) );
+	}
+}
+
 public class FTransitionRotateInFront : FTransition
 {
 	public FTransitionRotateInFront( FScene _scene, float _time )

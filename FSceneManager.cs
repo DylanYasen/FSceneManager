@@ -58,10 +58,10 @@ public sealed class FSceneManager : FContainer
 	/// Removes all other SCENENS and adds _SCENE.
 	/// </summary>
 	/// <param name="_scene">_scene.</param>
-	public void SetScene( FScene _scene )
+	public void SetScene( FScene _scene, bool _force = false )
 	{
 		while( mScenes.Count > 0 )
-			PopScene();
+			PopScene( _force );
 		
 		PushScene( _scene );
 	}
@@ -98,13 +98,13 @@ public sealed class FSceneManager : FContainer
 	/// Pops a SCENE from the top of the stack. Unpauses the SCENE underneath.
 	/// Starts the TRANSITION of a popped SCENE.
 	/// </summary>
-	public void PopScene()
+	public void PopScene( bool _force = false )
 	{
 		if( mScenes.Count > 0 )
 		{
 			FScene scene = mScenes[ mScenes.Count - 1 ];
 
-			if( scene.TransitionOff != null )
+			if( scene.TransitionOff != null && ! _force )
 			{
 				scene.TransitionOff.Start();
 				scene.State = FSceneState.TransitionOff;
