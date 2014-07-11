@@ -63,33 +63,6 @@ public class SceneGame : FScene
 
 
 	}
-
-	override public void HandleMultiTouch( FTouch[] touches )
-	{
-		if( mState != FSceneState.Active )
-			return;
-		
-		foreach( FTouch touch in touches )
-		{
-			// Where was the screen touched
-			//Vector2 touchPos = this.GlobalToLocal(touch.position);
-			
-			if( touch.phase == TouchPhase.Began )
-			{
-//				FSceneManager.Instance.SetScene( new SceneTest() );
-//				FSceneManager.Instance.PushScene( new SceneTest() );
-			}
-			else if( touch.phase == TouchPhase.Moved )
-			{
-				
-			}
-			else if( touch.phase == TouchPhase.Ended )
-			{
-				
-			}
-		}
-	}
-}
 ```
 
 

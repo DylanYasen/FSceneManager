@@ -14,7 +14,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-public class FScene : FContainer, FMultiTouchableInterface
+public class FScene : FContainer
 {
 	protected FSceneManager mSceneManager = null;
 	public FSceneManager SceneManager
@@ -65,8 +65,6 @@ public class FScene : FContainer, FMultiTouchableInterface
 		ListenForUpdate( HandleUpdate );
 
 		ListenForResize( HandleResize );
-
-		EnableMultiTouch();
 	}
 	
 	virtual public void HandleUpdate ()
@@ -87,11 +85,6 @@ public class FScene : FContainer, FMultiTouchableInterface
 	virtual public void HandleResize( bool _change )
 	{
 		
-	}
-
-	virtual public void HandleMultiTouch( FTouch[] touches )
-	{
-
 	}
 
 	public override string ToString()
