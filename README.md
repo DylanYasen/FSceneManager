@@ -72,3 +72,8 @@ Thanks
 - @MattRix [https://github.com/MattRix] - Awesome Futile framework
 - @ironpencil [https://github.com/ironpencil] - Idea's on how to improve FSceneManager
 - @jfleschler [https://github.com/jfleschler] - Code to load Tilemap Atlases
+
+
+Contact
+-------------
+- Visit [http://manaorb.com] for info and updates.
